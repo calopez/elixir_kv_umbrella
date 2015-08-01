@@ -48,20 +48,27 @@ defmodule KVServer do
   end
 
   defp serve(socket) do
-    socket
-    |> read_line()
-    |> write_line(socket) # is equivalent to: write_line(read_line(socket), socket)
-
+    msg =  case read_line(socket) do
+           {:ok, data} -> case KVServer.Command.parse(data) do
+                          {:ok, command}    -> KVServer.Command.run(command)
+                          {:error, _} = err -> err
+                          end
+           {:error, _} = err -> err
+           end
+    write_line(socket, msg)
     serve(socket)
   end
 
   defp read_line(socket) do
-      {:ok, data} = :gen_tcp.recv(socket, 0)
-      "this is what you wrote: #{data}"
+      :gen_tcp.recv(socket, 0)
   end
 
-  defp write_line(line, socket) do
-       :gen_tcp.send(socket, line)
+  defp write_line(socket, msg) do
+       :gen_tcp.send(socket, format_msg(msg))
   end
+
+  defp format_msg({:ok, text}), do: text
+  defp format_msg({:error, :unknown_command}), do: "UNKNOWN COMMAND\r\n"
+  defp format_msg({:error, _}), do: "ERROR\r\n"
 
 end

@@ -37,4 +37,11 @@ defmodule KVServer.Command do
     end
   end
 
+  @doc """
+  Runs the given command
+  """
+  def run(command) do
+    {:ok, "OK\r\n"}
+  end
+
 end
