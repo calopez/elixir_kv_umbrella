@@ -46,8 +46,11 @@ defmodule KVServer do
   end
 
   defp read_line(socket) do
-    {:ok, data} = :gen_tcp.recv(socket, 0)
-    "this is what you wrote: #{data}"
+    case :gen_tcp.recv(socket, 0) do
+      {:ok, data} -> "this is what you wrote: #{data}"
+      _           -> ""
+    end
+
   end
 
   defp write_line(line, socket) do
