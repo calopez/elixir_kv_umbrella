@@ -14,7 +14,7 @@ defmodule KVServer.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger],
+    [applications: [:logger, :kv],
      mod: {KVServer, []}]
   end
 
