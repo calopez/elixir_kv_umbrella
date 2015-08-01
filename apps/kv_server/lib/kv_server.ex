@@ -1,8 +1,7 @@
 defmodule KVServer do
   use Application
 
-  # See http://elixir-lang.org/docs/stable/elixir/Application.html
-  # for more information on OTP Applications
+  @doc false
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
@@ -17,6 +16,9 @@ defmodule KVServer do
     Supervisor.start_link(children, opts)
   end
 
+  @doc """
+  Starts accepting connections on the given `port`.
+  """
   def accept(port) do
     # The options below mean:
     #
@@ -34,7 +36,14 @@ defmodule KVServer do
 
   defp loop_acceptor(socket) do
     {:ok, client} = :gen_tcp.accept(socket)
-    Task.start_link(fn -> serve(client) end)
+    {:ok, pid} = Task.Supervisor.start_child(KVServer.TaskSupervisor, fn -> serve(client) end)
+
+    :ok = :gen_tcp.controlling_process(client, pid)
+    # This ^ makes the child process the "controlling process" of the
+    # client socket. If we didn't do this, the acceptor would bring down
+    # all the clients if it crashed because sockets are tied to the
+    # process that accepted them by default.
+
     loop_acceptor(socket)
   end
 
@@ -47,11 +56,8 @@ defmodule KVServer do
   end
 
   defp read_line(socket) do
-    case :gen_tcp.recv(socket, 0) do
-      {:ok, data} -> "this is what you wrote: #{data}"
-      _           -> ""
-    end
-
+      {:ok, data} = :gen_tcp.recv(socket, 0)
+      "this is what you wrote: #{data}"
   end
 
   defp write_line(line, socket) do
