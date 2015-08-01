@@ -7,8 +7,7 @@ defmodule KVServer do
     import Supervisor.Spec, warn: false
 
     children = [
-      # Define workers and child supervisors to be supervised
-      # worker(KVServer.Worker, [arg1, arg2, arg3])
+      worker(Task, [KVServer, :accept, [4040]])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
