@@ -69,6 +69,7 @@ defmodule KVServer do
 
   defp format_msg({:ok, text}), do: text
   defp format_msg({:error, :unknown_command}), do: "UNKNOWN COMMAND\r\n"
+  defp format_msg({:error, :not_found}), do: "NOT FOUND\r\n"
   defp format_msg({:error, _}), do: "ERROR\r\n"
 
 end
