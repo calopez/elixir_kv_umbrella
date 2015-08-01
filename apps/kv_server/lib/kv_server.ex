@@ -7,6 +7,7 @@ defmodule KVServer do
     import Supervisor.Spec, warn: false
 
     children = [
+      supervisor(Task.Supervisor, [[name: KVServer.TaskSupervisor]]),
       worker(Task, [KVServer, :accept, [4040]])
     ]
 
