@@ -1,5 +1,4 @@
 /_build
 /deps
-/apps/kv
 erl_crash.dump
 *.ez
