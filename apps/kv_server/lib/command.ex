@@ -40,8 +40,10 @@ defmodule KVServer.Command do
   @doc """
   Runs the given command
   """
+  def run(command)
+
   def run({:create, bucket}) do
-    KV.KVServer.create(KV.Registry, bucket)
+    KV.Registry.create(KV.Registry, bucket)
     {:ok, "OK\r\n"}
   end
 
@@ -70,7 +72,7 @@ defmodule KVServer.Command do
   end
 
   defp lookup(bucket, callback) do
-    case KV.Registry.lookup(KV.REgistry, bucket) do
+    case KV.Registry.lookup(KV.Registry, bucket) do
       {:ok, pid} -> callback.(pid)
       :error -> {:error, :not_found}
     end
